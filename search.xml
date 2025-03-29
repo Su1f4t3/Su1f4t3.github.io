@@ -190,7 +190,7 @@ ret2shellcode是指当数据段中有可写可执行段时，向该段中写入�
 
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
 <p><strong><font style="color:rgba(0, 0, 0, 0.87);">上面通过IDA找到了 &#x2F;bin&#x2F;sh 的地址，也可以通过</font></strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ROPgadget --binary rop  --string &#x27;/bin/sh&#x27;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ROPgadget --binary pwn  --string &#x27;/bin/sh&#x27;</span><br></pre></td></tr></table></figure>
 
 <p><font style="color:rgba(0, 0, 0, 0.87);">得到：</font></p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">└─$ ROPgadget --binary pwn  --string &#x27;/bin/sh&#x27;</span><br><span class="line">Strings information</span><br><span class="line">============================================================</span><br><span class="line">0x080be408 : /bin/sh</span><br></pre></td></tr></table></figure>
