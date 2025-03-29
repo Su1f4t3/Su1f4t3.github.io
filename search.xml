@@ -30,7 +30,8 @@
   <entry>
     <title>Hexo</title>
     <url>/2025/03/29/%E5%9F%BA%E6%9C%AC%20ROP/</url>
-    <content><![CDATA[<span id="more"></span>
+    <content><![CDATA[<p>一些学习记录</p>
+<span id="more"></span>
 <p><font style="color:rgba(0, 0, 0, 0.87);">来源：</font><a href="https://ctf-wiki.org/pwn/linux/user-mode/stackoverflow/x86/basic-rop/">CTF-Wiki</a></p>
 <p>返回导向编程（Return-Oriented Programming，缩写：ROP）是计算机安全中的一种漏洞利用技术，该技术允</p>
 <p>许攻击者在程序启用了安全保护技术（如堆栈不可执行—NX保护）的情况下控制程序执行流，执行恶意代码。</p>
