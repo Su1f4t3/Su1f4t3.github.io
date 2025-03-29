@@ -30,7 +30,7 @@
   <entry>
     <title>基本 ROP</title>
     <url>/2025/03/29/%E5%9F%BA%E6%9C%AC%20ROP/</url>
-    <content><![CDATA[<p>学习记录</p>
+    <content><![CDATA[<p>一些学习记录</p>
 <span id="more"></span>
 <p><font style="color:rgba(0, 0, 0, 0.87);">来源：</font><a href="https://ctf-wiki.org/pwn/linux/user-mode/stackoverflow/x86/basic-rop/">CTF-Wiki</a></p>
 <p>返回导向编程（Return-Oriented Programming，缩写：ROP）是计算机安全中的一种漏洞利用技术，该技术允</p>
@@ -306,11 +306,11 @@ system 和 /bin/sh 都存在。
 
 
 <ul>
-<li><code>&lt;font style=&quot;color:rgba(0, 0, 0, 0.87);&quot;&gt;b&#39;a&#39;*112&lt;/font&gt;</code><font style="color:rgba(0, 0, 0, 0.87);">：填充 112 个字符以覆盖缓冲区（及覆盖掉函数调用时保存的 EBP），为覆盖返回地址做准备。</font></li>
-<li><code>&lt;font style=&quot;color:rgba(0, 0, 0, 0.87);&quot;&gt;p32(gets_addr)&lt;/font&gt;</code><font style="color:rgba(0, 0, 0, 0.87);">：覆盖返回地址，使得函数返回时跳转到 gets() 函数。（后面的发送 ‘&#x2F;bin&#x2F;sh’ 就会使用这个 gets 函数）</font></li>
-<li><code>&lt;font style=&quot;color:rgba(0, 0, 0, 0.87);&quot;&gt;p32(sys_addr)&lt;/font&gt;</code><font style="color:rgba(0, 0, 0, 0.87);">：gets() 执行完毕后返回时，跳转到 system() 函数。</font></li>
-<li><code>&lt;font style=&quot;color:rgba(0, 0, 0, 0.87);&quot;&gt;p32(bss_addr)&lt;/font&gt;</code><font style="color:rgba(0, 0, 0, 0.87);">（第一次）：作为 gets() 的参数，即 gets() 会把输入写入这个地址。（也就是 &#x2F;bin&#x2F;sh ）</font></li>
-<li><code>&lt;font style=&quot;color:rgba(0, 0, 0, 0.87);&quot;&gt;p32(bss_addr)&lt;/font&gt;</code><font style="color:rgba(0, 0, 0, 0.87);">（第二次）：作为 system() 的参数，即 system(bss_addr) 将执行存储在 bss_addr 处的 “&#x2F;bin&#x2F;sh”。</font></li>
+<li><font style="color:rgba(0, 0, 0, 0.87);">b’a’*112：填充 112 个字符以覆盖缓冲区（及覆盖掉函数调用时保存的 EBP），为覆盖返回地址做准备。</font></li>
+<li><font style="color:rgba(0, 0, 0, 0.87);">p32(gets_addr)：覆盖返回地址，使得函数返回时跳转到 gets() 函数。（后面的发送 ‘&#x2F;bin&#x2F;sh’ 就会使用这个 gets 函数）</font></li>
+<li><font style="color:rgba(0, 0, 0, 0.87);">p32(sys_addr)：gets() 执行完毕后返回时，跳转到 system() 函数。</font></li>
+<li><font style="color:rgba(0, 0, 0, 0.87);">p32(bss_addr)：（第一次）：作为 gets() 的参数，即 gets() 会把输入写入这个地址。（也就是 &#x2F;bin&#x2F;sh ）</font></li>
+<li><font style="color:rgba(0, 0, 0, 0.87);">p32(bss_addr)：（第二次）：作为 system() 的参数，即 system(bss_addr) 将执行存储在 bss_addr 处的 “&#x2F;bin&#x2F;sh”。</font></li>
 </ul>
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
 <h3 id="tdUNO"><font style="color:rgba(0, 0, 0, 0.87);">ret2libc3</font></h3>
@@ -360,17 +360,14 @@ write_32（来源：[32位程序libc题型模板](https://blog.csdn.net/qq_51032
 
 
 
-<h2 id="25f9c7fa">**<font style="color:rgb(64, 64, 64);">总结对比表</font>**</h2>
-| **技术** | **NX状态** | **关键条件** | **典型场景** |
+<h2 id="rznxT">总结</h2>
+| 技术 | NX状态 | 关键条件 | 典型场景 |
 | --- | --- | --- | --- |
-| **<font style="color:rgb(64, 64, 64);">ret2text</font>** | <font style="color:rgb(64, 64, 64);">任意</font> | <font style="color:rgb(64, 64, 64);">程序内部有可用代码（如后门函数）</font> | <font style="color:rgb(64, 64, 64);">存在隐藏的</font>`<font style="color:rgb(64, 64, 64);">system("/bin/sh")</font>` |
-| **<font style="color:rgb(64, 64, 64);">ret2shellcode</font>** | <font style="color:rgb(64, 64, 64);">关闭</font> | <font style="color:rgb(64, 64, 64);">可执行内存 + Shellcode写入</font> | <font style="color:rgb(64, 64, 64);">无NX，允许直接执行代码</font> |
-| **<font style="color:rgb(64, 64, 64);">ret2syscall</font>** | <font style="color:rgb(64, 64, 64);">开启</font> | <font style="color:rgb(64, 64, 64);">ROP Gadget + 系统调用参数</font> | <font style="color:rgb(64, 64, 64);">无Libc泄露，但能拼凑系统调用</font> |
-| **<font style="color:rgb(64, 64, 64);">ret2libc</font>** | <font style="color:rgb(64, 64, 64);">开启</font> | <font style="color:rgb(64, 64, 64);">Libc泄露 +</font><font style="color:rgb(64, 64, 64);"> </font>`<font style="color:rgb(64, 64, 64);">system</font>`<br><font style="color:rgb(64, 64, 64);">/</font>`<font style="color:rgb(64, 64, 64);">/bin/sh</font>` | <font style="color:rgb(64, 64, 64);">动态链接，可泄露Libc地址</font> |
+| ret2text | 任意 | 程序内部有可用代码（如后门函数） | 存在隐藏的 system("/bin/sh") |
+| ret2shellcode | 关闭 | 可执行内存 + Shellcode写入 | 无NX，允许直接执行代码 |
+| ret2syscall | 开启 | ROP Gadget + 系统调用参数 | 无Libc泄露，但能拼凑系统调用 |
+| ret2libc | 开启 | Libc泄露 + system + /bin/sh | 动态链接，可泄露Libc地址 |
 
-
-  
- 
 
 ]]></content>
       <categories>
