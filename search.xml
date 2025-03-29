@@ -30,7 +30,7 @@
   <entry>
     <title>基本 ROP</title>
     <url>/2025/03/29/%E5%9F%BA%E6%9C%AC%20ROP/</url>
-    <content><![CDATA[<p>一些学习记录</p>
+    <content><![CDATA[<p>学习记录</p>
 <span id="more"></span>
 <p><font style="color:rgba(0, 0, 0, 0.87);">来源：</font><a href="https://ctf-wiki.org/pwn/linux/user-mode/stackoverflow/x86/basic-rop/">CTF-Wiki</a></p>
 <p>返回导向编程（Return-Oriented Programming，缩写：ROP）是计算机安全中的一种漏洞利用技术，该技术允</p>
@@ -361,14 +361,11 @@ write_32（来源：[32位程序libc题型模板](https://blog.csdn.net/qq_51032
 
 
 <h2 id="rznxT">总结</h2>
-| 技术 | NX状态 | 关键条件 | 典型场景 |
-| --- | --- | --- | --- |
-| ret2text | 任意 | 程序内部有可用代码（如后门函数） | 存在隐藏的 system("/bin/sh") |
-| ret2shellcode | 关闭 | 可执行内存 + Shellcode写入 | 无NX，允许直接执行代码 |
-| ret2syscall | 开启 | ROP Gadget + 系统调用参数 | 无Libc泄露，但能拼凑系统调用 |
-| ret2libc | 开启 | Libc泄露 + system + /bin/sh | 动态链接，可泄露Libc地址 |
+ret2text：NX保护任意，程序内部有可用代码（如后门函数）
 
-
+<p>ret2shellcode：NX保护关闭（一般是），可执行内存 + Shellcode写入</p>
+<p>ret2syscall：NX保护开启，ROP Gadget + 系统调用参数</p>
+<p>ret2libc：NX保护开启，Libc泄露 + system + &#x2F;bin&#x2F;sh</p>
 ]]></content>
       <categories>
         <category>pwn</category>
