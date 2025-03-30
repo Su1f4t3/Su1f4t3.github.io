@@ -377,7 +377,7 @@ ret2text：NX保护任意，程序内部有可用代码（如后门函数）
   </entry>
   <entry>
     <title>格式化字符串漏洞</title>
-    <url>/2025/03/29/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E/</url>
+    <url>/2025/03/30/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E/</url>
     <content><![CDATA[<p>记录</p>
 <span id="more"></span>
 <p>格式化字符串漏洞指的是printf仅包含格式化字符串，而没有其他参数时，会越界访问到栈中高地址的内容作为参数，可以造成内存数据被泄露或修改。</p>
@@ -503,7 +503,7 @@ buuctf-[第五空间2019 决赛]PWN5
 
 
 
-<h2 id="bacvK">参考：</h2>
+<h2 id="bacvK">参考</h2>
 https://zhuanlan.zhihu.com/p/465896542
 
 
